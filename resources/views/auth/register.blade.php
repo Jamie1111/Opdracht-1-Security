@@ -56,6 +56,11 @@
                     Al een account?
                     <a href="{{ route('login') }}">Log in</a>
                 </p>
+
+                <p class="help is-info has-text-centered mt-4">
+                    Gebruik een <a href="https://bitwarden.com" target="_blank">wachtwoordmanager</a> voor veilige wachtwoorden.
+                </p>
+
             </div>
         </div>
     </section>

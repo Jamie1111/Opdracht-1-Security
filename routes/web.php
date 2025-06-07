@@ -37,3 +37,12 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware('auth')->name('dashboard');
 
+// Reset wachtwoord route
+Route::get('password/reset', [AuthController::class, 'showResetRequestForm'])->name('password.request');
+Route::post('password/email', [AuthController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('password/reset/{token}', [AuthController::class, 'showResetForm'])->name('password.reset');
+Route::post('password/reset', [AuthController::class, 'reset'])->name('password.update');
+
+// Max 5 pogingen per minuut
+Route::post('login', [AuthController::class, 'login'])->middleware('throttle:5,1');
+
