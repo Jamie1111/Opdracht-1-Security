@@ -21,6 +21,11 @@ Route::resource('/products', ProductController::class);
 Route::resource('/orders', ProductOrderController::class);
 Route::resource('/categories', CategoryController::class);
 
+Route::middleware('auth')->group(function () {
+    Route::resource('categories', CategoryController::class);
+});
+
+
 // Registratie
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
 Route::post('/register', [AuthController::class, 'register']);

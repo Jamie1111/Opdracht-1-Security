@@ -4,101 +4,85 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CategoryController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function __construct()
     {
-        return view('categories.index', [
-            'categories' => Category::all()
-        ]);
+        $this->middleware('auth');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    public function index()
+    {
+        $categories = Category::where('user_id', Auth::id())->get();
+
+        return view('categories.index', compact('categories'));
+    }
+
+    public function show($id)
+    {
+        $category = Category::where('id', $id)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        return view('categories.show', compact('category'));
+    }
+
     public function create()
     {
         return view('categories.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-            {
-                // Validate the request
-                $validated = $request->validate([
-                    'name' => 'required',
-                    'type' => 'required',
-                    'is_active' => 'required',
-                ]);
-
-                // Create a new Post model object, mass-assign its attributes with
-                // the validated data and store it to the database
-                $category = Category::create($validated);
-
-                // Redirect to the blog index page
-                return redirect()->route('categories.index');
-            }
-    }
-
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Category $category)
-    {
-        return view('categories.show', [
-            'category' => $category
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'type' => 'required|string|max:100',
+            'is_active' => 'required|boolean',
         ]);
+
+        $validated['user_id'] = Auth::id();
+
+        Category::create($validated);
+
+        return redirect()->route('categories.index')->with('success', 'Category aangemaakt!');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Category $category)
+    public function edit($id)
     {
-        return view('categories.edit', [
-            'category' => $category
+        $category = Category::where('id', $id)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        return view('categories.edit', compact('category'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $category = Category::where('id', $id)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'type' => 'required|string|max:100',
+            'is_active' => 'required|boolean',
         ]);
+
+        $category->update($validated);
+
+        return redirect()->route('categories.index')->with('success', 'Category bijgewerkt!');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Category $category)
+    public function destroy($id)
     {
-        {
-            $validated = $request->validate([
-                'name' => 'required',
-                'type' => 'required',
-                'is_active' => 'required',
-            ]);
+        $category = Category::where('id', $id)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
 
-            // Use `update` to mass (re)assign updated attributes
-            $category->update($validated);
-
-            // Redirect to the blog show page
-            return redirect()->route('categories.show', $category)
-                ->with('success', 'Category successfully updated');
-        }
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Category $category)
-    {
-        // Delete the post from the database
         $category->delete();
 
-        // Redirect to the blog show page
-        return redirect()->route('categories.index')
-            ->with('success', 'Category successfully deleted');
+        return redirect()->route('categories.index')->with('success', 'Category verwijderd!');
     }
 }
