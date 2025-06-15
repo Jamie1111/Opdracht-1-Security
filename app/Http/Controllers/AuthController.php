@@ -34,7 +34,7 @@ class AuthController extends Controller
         $user = new User();
         $user->name = $validated['name'];
         $user->email = $validated['email'];
-        $user->password = Hash::make($validated['password']); // expliciet hashen
+        $user->password = Hash::make($validated['password']);
         $user->save();
 
         return redirect()->route('login')->with('success', 'Registratie gelukt! Log in.');
@@ -51,7 +51,7 @@ class AuthController extends Controller
         $remember = $request->has('remember');
 
         if (Auth::attempt($credentials, $remember)) {
-            $request->session()->regenerate(); // extra veiligheid
+            $request->session()->regenerate();
             return redirect()->intended('/dashboard');
         }
 
@@ -102,7 +102,7 @@ class AuthController extends Controller
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function ($user, $password) {
-                $user->password = Hash::make($password); // veilig gehasht
+                $user->password = Hash::make($password);
                 $user->save();
             }
         );

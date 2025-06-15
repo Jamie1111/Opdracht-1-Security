@@ -42,6 +42,11 @@
                 </form>
 
                 <p class="has-text-centered mt-4">
+                    <a href="{{ route('password.request') }}">Wachtwoord vergeten?</a>
+                </p>
+
+
+                <p class="has-text-centered mt-4">
                     Nog geen account?
                     <a href="{{ route('register') }}">Registreer hier</a>
                 </p>
